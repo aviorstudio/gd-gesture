@@ -2,6 +2,8 @@
 class_name GestureRecognizerModule
 extends RefCounted
 
+const PointerUnifierModule = preload("res://src/pointer_unifier_module.gd")
+
 ## Runtime configuration for gesture detection.
 class GestureConfig extends RefCounted:
 	## Max duration for a tap in seconds.
@@ -67,7 +69,7 @@ func setup(owner: Node, config: GestureConfig = null) -> void:
 	_owner.add_child(_long_press_timer)
 
 ## Processes a normalized pointer event.
-func process_pointer_event(event: PointerUnifierModule.PointerEvent) -> void:
+func process_pointer_event(event: Object) -> void:
 	if event == null:
 		return
 	if event.event_type == "press":
@@ -96,7 +98,7 @@ func trigger_haptic(strength: float = -1.0) -> void:
 	var resolved_strength: float = strength if strength >= 0.0 else _config.haptic_intensity
 	Input.vibrate_handheld(int(clamp(resolved_strength, 0.0, 1.0) * 100.0))
 
-func _on_pointer_pressed(event: PointerUnifierModule.PointerEvent) -> void:
+func _on_pointer_pressed(event: Object) -> void:
 	var index: int = event.index
 	_touch_points[index] = event.position
 	_touch_start_positions[index] = event.position
@@ -112,7 +114,7 @@ func _on_pointer_pressed(event: PointerUnifierModule.PointerEvent) -> void:
 	if _touch_points.size() == 2:
 		_current_gesture = "pinch"
 
-func _on_pointer_dragged(event: PointerUnifierModule.PointerEvent) -> void:
+func _on_pointer_dragged(event: Object) -> void:
 	var index: int = event.index
 	if not _touch_points.has(index):
 		return
@@ -133,7 +135,7 @@ func _on_pointer_dragged(event: PointerUnifierModule.PointerEvent) -> void:
 		_emit_pinch()
 	_touch_points[index] = event.position
 
-func _on_pointer_released(event: PointerUnifierModule.PointerEvent) -> void:
+func _on_pointer_released(event: Object) -> void:
 	var index: int = event.index
 	if not _touch_points.has(index):
 		return

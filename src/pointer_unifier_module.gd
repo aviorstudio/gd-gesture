@@ -20,11 +20,11 @@ class PointerEvent extends RefCounted:
 	var timestamp_ms: int = 0
 
 ## Emitted when a pointer is pressed.
-signal pointer_pressed(event: PointerEvent)
+signal pointer_pressed(event)
 ## Emitted when a pointer is moved while pressed.
-signal pointer_dragged(event: PointerEvent)
+signal pointer_dragged(event)
 ## Emitted when a pointer is released.
-signal pointer_released(event: PointerEvent)
+signal pointer_released(event)
 
 ## Processes an input event and emits normalized pointer events.
 func process_input(event: InputEvent) -> void:
