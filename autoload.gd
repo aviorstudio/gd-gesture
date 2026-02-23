@@ -2,8 +2,8 @@
 class_name GdGestureAutoload
 extends Node
 
-const PointerUnifierModule = preload("res://src/pointer_unifier_module.gd")
-const GestureRecognizerModule = preload("res://src/gesture_recognizer_module.gd")
+const PointerUnifierModule = preload("src/pointer_unifier_module.gd")
+const GestureRecognizerModule = preload("src/gesture_recognizer_module.gd")
 
 ## Emitted when a pointer is pressed.
 signal pointer_pressed(event)

@@ -2,7 +2,7 @@
 class_name GestureRecognizerModule
 extends RefCounted
 
-const PointerUnifierModule = preload("res://src/pointer_unifier_module.gd")
+const PointerUnifierModule = preload("pointer_unifier_module.gd")
 
 ## Runtime configuration for gesture detection.
 class GestureConfig extends RefCounted:
