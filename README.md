@@ -2,6 +2,8 @@
 
 Game-agnostic gesture primitives for Godot 4.
 
+This addon is intentionally focused on input normalization and gesture detection primitives.
+
 ## Installation
 
 ### Via gdpm
@@ -30,6 +32,11 @@ pointer_unifier.pointer_pressed.connect(func(event: PointerUnifierModule.Pointer
 - `PointerUnifierModule`: normalize mouse/touch into typed pointer events.
 - `GestureRecognizerModule`: tap/double-tap/long-press/swipe/drag/pinch detection.
 - `GdGestureAutoload`: optional autoload facade that wires both modules.
+
+## Scope Boundary
+
+- In scope: pointer normalization and gesture recognition.
+- Out of scope: UI action mapping, scene navigation triggers, and gameplay command orchestration.
 
 ## Testing
 
