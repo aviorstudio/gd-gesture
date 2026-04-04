@@ -51,7 +51,7 @@ var _gesture_start_time: Dictionary[int, float] = {}
 var _touch_start_positions: Dictionary[int, Vector2] = {}
 var _current_gesture: String = ""
 var _is_dragging: bool = false
-var _long_press_timer: Timer = null
+var _long_press_generation: int = 0
 var _last_tap_time: float = 0.0
 var _last_tap_position: Vector2 = Vector2.ZERO
 var _pending_long_press_index: int = -1
@@ -61,12 +61,7 @@ func setup(owner: Node, config: GestureConfig = null) -> void:
 	_owner = owner
 	if config != null:
 		_config = config
-	if _long_press_timer != null and is_instance_valid(_long_press_timer):
-		_long_press_timer.queue_free()
-	_long_press_timer = Timer.new()
-	_long_press_timer.one_shot = true
-	_long_press_timer.timeout.connect(_on_long_press_timeout)
-	_owner.add_child(_long_press_timer)
+	_cancel_long_press()
 
 ## Processes a normalized pointer event.
 func process_pointer_event(event: Object) -> void:
@@ -105,12 +100,10 @@ func _on_pointer_pressed(event: Object) -> void:
 	_gesture_start_time[index] = float(Time.get_ticks_msec()) / 1000.0
 	if _touch_points.size() == 1:
 		_pending_long_press_index = index
-		if _long_press_timer != null:
-			_long_press_timer.start(_config.long_press_duration)
+		_start_long_press()
 	else:
 		_pending_long_press_index = -1
-		if _long_press_timer != null:
-			_long_press_timer.stop()
+		_cancel_long_press()
 	if _touch_points.size() == 2:
 		_current_gesture = "pinch"
 
@@ -120,8 +113,8 @@ func _on_pointer_dragged(event: Object) -> void:
 		return
 	var start_position: Vector2 = _touch_start_positions.get(index, event.position)
 	var distance: float = event.position.distance_to(start_position)
-	if distance > float(_config.long_press_drag_threshold) and _long_press_timer != null:
-		_long_press_timer.stop()
+	if distance > float(_config.long_press_drag_threshold):
+		_cancel_long_press()
 		_pending_long_press_index = -1
 	if distance > float(_config.drag_threshold) and not _is_dragging:
 		_is_dragging = true
@@ -162,8 +155,7 @@ func _on_pointer_released(event: Object) -> void:
 		_current_gesture = ""
 		_is_dragging = false
 		_pending_long_press_index = -1
-		if _long_press_timer != null:
-			_long_press_timer.stop()
+		_cancel_long_press()
 
 func _emit_pinch() -> void:
 	if _touch_points.size() != 2:
@@ -192,6 +184,21 @@ func _on_long_press_timeout() -> void:
 	var position: Vector2 = _touch_points[_pending_long_press_index]
 	long_press_detected.emit(position)
 	gesture_detected.emit("long_press", {"position": position, "index": _pending_long_press_index})
+
+func _start_long_press() -> void:
+	_cancel_long_press()
+	if _owner == null or not _owner.is_inside_tree() or _owner.get_tree() == null:
+		return
+	_long_press_generation += 1
+	var current_generation: int = _long_press_generation
+	var timer: SceneTreeTimer = _owner.get_tree().create_timer(_config.long_press_duration)
+	timer.timeout.connect(func() -> void:
+		if current_generation == _long_press_generation:
+			_on_long_press_timeout()
+	, CONNECT_ONE_SHOT)
+
+func _cancel_long_press() -> void:
+	_long_press_generation += 1
 
 func _check_for_double_tap(position: Vector2) -> void:
 	var now_seconds: float = float(Time.get_ticks_msec()) / 1000.0
