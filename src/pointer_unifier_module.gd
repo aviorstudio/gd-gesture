@@ -26,6 +26,8 @@ signal pointer_dragged(event)
 ## Emitted when a pointer is released.
 signal pointer_released(event)
 
+var mouse_button: MouseButton = MOUSE_BUTTON_LEFT
+
 ## Processes an input event and emits normalized pointer events.
 func process_input(event: InputEvent) -> void:
 	if event is InputEventScreenTouch:
@@ -37,7 +39,7 @@ func process_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		_handle_mouse_button(event)
 		return
-	if event is InputEventMouseMotion and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+	if event is InputEventMouseMotion and Input.is_mouse_button_pressed(mouse_button):
 		_handle_mouse_motion(event)
 
 func _handle_screen_touch(event: InputEventScreenTouch) -> void:
@@ -66,7 +68,7 @@ func _handle_screen_drag(event: InputEventScreenDrag) -> void:
 	pointer_dragged.emit(pointer_event)
 
 func _handle_mouse_button(event: InputEventMouseButton) -> void:
-	if event.button_index != MOUSE_BUTTON_LEFT:
+	if event.button_index != mouse_button:
 		return
 	var pointer_event: PointerEvent = _build_pointer_event(
 		event.position,
