@@ -38,6 +38,21 @@ pointer_unifier.pointer_pressed.connect(func(event: PointerUnifierModule.Pointer
 - In scope: pointer normalization and gesture recognition.
 - Out of scope: UI action mapping, scene navigation triggers, and gameplay command orchestration.
 
+## Autoload vs Modules
+
+Use `GdGesture` when a project wants one global pointer/gesture stream. Use `PointerUnifierModule` and `GestureRecognizerModule` directly when a scene needs isolated input handling, custom coordinate conversion, or different gesture thresholds.
+
+`PointerUnifierModule.mouse_button` defaults to `MOUSE_BUTTON_LEFT` and can be changed for right/middle-button tools.
+
+## Gameplay Drag Example
+
+```gdscript
+func _ready() -> void:
+	GdGesture.drag_started.connect(_on_drag_started)
+	GdGesture.drag_updated.connect(_on_drag_updated)
+	GdGesture.drag_ended.connect(_on_drag_ended)
+```
+
 ## Testing
 
 `./tests/test.sh`
