@@ -1,6 +1,6 @@
 extends SceneTree
 
-const PointerUnifierModule = preload("res://src/pointer_unifier_module.gd")
+const PointerUnifierModule = preload("res://addon/src/pointer_unifier_module.gd")
 
 func _init() -> void:
 	call_deferred("_run")

@@ -10,7 +10,7 @@ This addon is intentionally focused on input normalization and gesture detection
 `gdpm install @aviorstudio/gd-gesture`
 
 ### Manual
-Copy this directory into `addons/@aviorstudio_gd-gesture/` and enable the plugin.
+Copy `addon/` into `addons/@aviorstudio_gd-gesture/` and enable the plugin.
 
 ## Quick Start
 
