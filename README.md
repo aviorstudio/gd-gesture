@@ -6,9 +6,9 @@ Use this addon when you want mouse and touch input normalized into one pointer s
 
 ## Installation
 
-### Via gdpm
+### Via gdam
 
-`gdpm install @aviorstudio/gd-gesture`
+`gdam install @aviorstudio/gd-gesture`
 
 ### Manual
 
