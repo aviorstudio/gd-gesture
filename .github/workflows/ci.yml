@@ -46,4 +46,5 @@ jobs:
           path: |
             dist/@aviorstudio_gd-gesture.zip
             dist/@aviorstudio_gd-gesture.zip.sha256
+            dist/playground/
           if-no-files-found: error
