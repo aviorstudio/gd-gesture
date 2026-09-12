@@ -11,6 +11,8 @@ signal pointer_pressed(event)
 signal pointer_dragged(event)
 ## Emitted when a pointer is released.
 signal pointer_released(event)
+## Emitted when an owned pointer is canceled.
+signal pointer_canceled(event)
 
 ## Emitted when any gesture is detected.
 signal gesture_detected(gesture_type: String, data: Dictionary)
@@ -30,6 +32,8 @@ signal drag_updated(position: Vector2, relative: Vector2, index: int)
 signal drag_ended(position: Vector2, index: int)
 ## Emitted for pinch gestures.
 signal pinch_detected(scale_delta: float)
+## Emitted when recognition is canceled for a pointer.
+signal gesture_canceled(index: int, reason: String)
 
 var _pointer_unifier: PointerUnifierModule = PointerUnifierModule.new()
 var _gesture_recognizer: GestureRecognizerModule = GestureRecognizerModule.new()
@@ -46,6 +50,8 @@ func setup(config: GestureRecognizerModule.GestureConfig = null) -> void:
 		_pointer_unifier.pointer_dragged.disconnect(_on_pointer_dragged)
 	if _pointer_unifier.pointer_released.is_connected(_on_pointer_released):
 		_pointer_unifier.pointer_released.disconnect(_on_pointer_released)
+	if _pointer_unifier.pointer_canceled.is_connected(_on_pointer_canceled):
+		_pointer_unifier.pointer_canceled.disconnect(_on_pointer_canceled)
 	if config == null:
 		_gesture_recognizer.setup(self)
 	else:
@@ -53,10 +59,18 @@ func setup(config: GestureRecognizerModule.GestureConfig = null) -> void:
 	_pointer_unifier.pointer_pressed.connect(_on_pointer_pressed)
 	_pointer_unifier.pointer_dragged.connect(_on_pointer_dragged)
 	_pointer_unifier.pointer_released.connect(_on_pointer_released)
+	_pointer_unifier.pointer_canceled.connect(_on_pointer_canceled)
 	_wire_gesture_signals()
 
 func _unhandled_input(event: InputEvent) -> void:
 	_pointer_unifier.process_input(event)
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_APPLICATION_FOCUS_OUT:
+		_pointer_unifier.cancel_all("focus_lost")
+
+func _exit_tree() -> void:
+	_pointer_unifier.cancel_all("teardown")
 
 ## Returns the touch count currently tracked by recognizer.
 func get_touch_count() -> int:
@@ -90,6 +104,10 @@ func _on_pointer_released(event: Object) -> void:
 	_gesture_recognizer.process_pointer_event(event)
 	pointer_released.emit(event)
 
+func _on_pointer_canceled(event: Object) -> void:
+	_gesture_recognizer.process_pointer_event(event)
+	pointer_canceled.emit(event)
+
 func _wire_gesture_signals() -> void:
 	if _gesture_recognizer.gesture_detected.is_connected(_forward_gesture_detected):
 		return
@@ -102,6 +120,7 @@ func _wire_gesture_signals() -> void:
 	_gesture_recognizer.drag_updated.connect(_forward_drag_updated)
 	_gesture_recognizer.drag_ended.connect(_forward_drag_ended)
 	_gesture_recognizer.pinch_detected.connect(_forward_pinch_detected)
+	_gesture_recognizer.gesture_canceled.connect(_forward_gesture_canceled)
 
 func _forward_gesture_detected(gesture_type: String, data: Dictionary) -> void:
 	gesture_detected.emit(gesture_type, data)
@@ -129,3 +148,6 @@ func _forward_drag_ended(position: Vector2, index: int) -> void:
 
 func _forward_pinch_detected(scale_delta: float) -> void:
 	pinch_detected.emit(scale_delta)
+
+func _forward_gesture_canceled(index: int, reason: String) -> void:
+	gesture_canceled.emit(index, reason)

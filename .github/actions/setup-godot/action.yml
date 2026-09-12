@@ -17,4 +17,4 @@ runs:
 
     - name: Install verified Godot
       shell: bash
-      run: RUNNER_TEMP="$RUNNER_TEMP" ./tools/setup_godot.sh
+      run: RUNNER_TEMP="$RUNNER_TEMP" INSTALL_TEMPLATES=true ./tools/setup_godot.sh
