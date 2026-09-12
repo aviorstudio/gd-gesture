@@ -28,6 +28,7 @@ runs:
         set -euo pipefail
         python3 tools/package_addon.py
         python3 tools/test_package.py
+        python3 tools/test_release_version.py
 
     # Godot comes from a LOCAL action, copied from the one castledrop and prizm
     # carry. The version used to be a download URL written into ci.yml -- the
