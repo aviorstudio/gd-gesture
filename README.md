@@ -79,7 +79,12 @@ Run locally with:
 ./tests/test.sh
 ```
 
-CI runs the same test script when available.
+**Correction (fieldsofrevik#144):** CI and release both run the required
+Godot 4.7.2 suite, fail on runtime/log errors and unreachable assertion
+sentinels, and verify the exact deterministic release ZIP through a clean
+editor enable, restart, smoke, disable, and restart lifecycle. Earlier text
+said CI ran the script “when available,” which understated that a missing suite
+must fail and did not describe release coverage.
 
 ## License
 
