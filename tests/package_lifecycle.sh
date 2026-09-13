@@ -36,6 +36,30 @@ GD_GESTURE_PLUGIN_ENABLED=true run_test \
   "$godot" --headless --editor --path "$fixture"
 run_test "PASS gd-gesture packaged_smoke assertions=1" \
   "$godot" --headless --path "$fixture" --script "$fixture/lifecycle/smoke.gd"
+web=$(mktemp -d)
+trap 'rm -rf "$fixture" "$web"' EXIT
+mkdir -p "$web/addons/@aviorstudio_gd-gesture"
+python3 "$root/tools/verify_package.py" "$archive" "$web/addons/@aviorstudio_gd-gesture"
+cp "$root/tests/web/playground.gd" "$root/tests/web/playground.tscn" "$root/tests/web/export_presets.cfg" "$web/"
+cat > "$web/project.godot" <<'EOF'
+[application]
+config/name="gd-gesture web playground"
+run/main_scene="res://playground.tscn"
+
+[display/window]
+size/viewport_width=960
+size/viewport_height=540
+size/window_width_override=960
+size/window_height_override=540
+
+[rendering]
+renderer/rendering_method="gl_compatibility"
+EOF
+rm -rf "$root/dist/playground"
+mkdir -p "$root/dist/playground"
+"$godot" --headless --path "$web" --export-release Web "$root/dist/playground/index.html"
+test -s "$root/dist/playground/index.html"
+test -s "$root/dist/playground/index.wasm"
 GD_GESTURE_PLUGIN_ENABLED=false run_test \
   "PASS gd-gesture set_plugin_enabled assertions=1" \
   "$godot" --headless --editor --path "$fixture"
@@ -50,7 +74,7 @@ PY
 
 # A consumer-owned singleton with the same name is never replaced or deleted.
 consumer=$(mktemp -d)
-trap 'rm -rf "$fixture" "$consumer"' EXIT
+trap 'rm -rf "$fixture" "$web" "$consumer"' EXIT
 mkdir -p "$consumer/addons/@aviorstudio_gd-gesture" "$consumer/addons/lifecycle_controller"
 python3 "$root/tools/verify_package.py" "$archive" "$consumer/addons/@aviorstudio_gd-gesture"
 cp "$root/tests/lifecycle/controller/"* "$consumer/addons/lifecycle_controller/"
