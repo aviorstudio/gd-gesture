@@ -3,6 +3,8 @@ extends SceneTree
 const PointerUnifierModule = preload("res://addon/src/pointer_unifier_module.gd")
 const GestureRecognizerModule = preload("res://addon/src/gesture_recognizer_module.gd")
 
+var _failures: int = 0
+
 func _init() -> void:
 	call_deferred("_run")
 
@@ -10,7 +12,9 @@ func _run() -> void:
 	_test_touch_count_lifecycle()
 	_test_drag_state_transitions()
 	_test_pinch_state_assignment()
-	quit()
+	if _failures == 0:
+		print("PASS gd-gesture gesture_recognizer_module_test assertions=6")
+	quit(_failures)
 
 func _test_touch_count_lifecycle() -> void:
 	var owner: Node = Node.new()
@@ -70,5 +74,5 @@ func _pointer_event(event_type: String, position: Vector2, relative: Vector2, in
 func _assert(condition: bool, message: String) -> void:
 	if condition:
 		return
-	push_error(message)
-	quit(1)
+	push_error("FAIL: " + message)
+	_failures += 1
