@@ -30,6 +30,14 @@ runs:
         python3 tools/test_package.py
         python3 tools/test_release_version.py
 
+    - name: Validate pinned GDAM action input contracts
+      shell: bash
+      run: |
+        set -euo pipefail
+        python3 -m venv "$RUNNER_TEMP/action-input-contract-venv"
+        "$RUNNER_TEMP/action-input-contract-venv/bin/pip" install PyYAML==6.0.2
+        "$RUNNER_TEMP/action-input-contract-venv/bin/python" tools/test_action_inputs.py
+
     # Godot comes from a LOCAL action, copied from the one castledrop and prizm
     # carry. The version used to be a download URL written into ci.yml -- the
     # engine this addon is tested against lived in workflow YAML.

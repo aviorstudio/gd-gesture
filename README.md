@@ -100,6 +100,12 @@ editor enable, restart, smoke, disable, and restart lifecycle. Earlier text
 said CI ran the script “when available,” which understated that a missing suite
 must fail and did not describe release coverage.
 
+The shared CI/Release test action also validates GDAM action inputs against
+immutable upstream metadata, including negative/restored typo and unsupported
+`publish.version` controls. See [the fixture documentation](tests/fixtures/gdam-actions/README.md)
+for the local Python test command and provenance. `install.version` remains a
+valid CLI selection input; registry publication uses the exact release `tag`.
+
 ## License
 
 MIT
