@@ -81,9 +81,10 @@ jobs:
           fi
       - name: Install GDAM
         uses: aviorstudio/gdam-actions/install@d735444eb470194585def44521d5d91df2260e63 # v0.0.2
+        with:
+          version: v0.0.8
       - name: Publish to GDAM
         uses: aviorstudio/gdam-actions/publish@d735444eb470194585def44521d5d91df2260e63 # v0.0.2
         with:
-          version: ${{ needs.test.outputs.version }}
           tag: ${{ needs.test.outputs.tag }}
           secret-key: ${{ secrets.GDAM_SECRET_KEY }}
