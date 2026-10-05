@@ -1,3 +1,5 @@
+<!-- Generated from private documentation source. Do not edit directly. Source SHA256: 88ed4d92c74c3c2295175764466361b3adddc0bc88b64fe4b2c6420dbb114d30 -->
+
 # gd-gesture
 
 Recognize taps, swipes, drags, pinches, and long presses in Godot 4.
@@ -47,7 +49,7 @@ func _ready() -> void:
 	pointer_unifier.pointer_canceled.connect(gesture_recognizer.process_pointer_event)
 ```
 
-**Correction (https://github.com/aviorstudio/fieldsofrevik/issues/144):**
+**Usage note:**
 Earlier examples used the nonexistent `pointer_moved` signal and a one-argument
 tap callback. The compiled example above uses the actual signal names and the
 two-argument `tap_detected(position, index)` contract.
@@ -72,40 +74,7 @@ two-argument `tap_detected(position, index)` contract.
 - Use direct modules for split-screen, editor tools, or scenes with custom gesture thresholds.
 - Map gestures to gameplay actions in your own game code.
 
-## Repository Layout
-
-- `addon/`: Godot plugin source packaged for GDAM and manual installation.
-- `addon/plugin.cfg`: plugin name, version, description, and entry script.
-- `addon/src/`: reusable GDScript modules.
-- `tests/`: Godot test project/scripts for addon behavior.
-- `.github/workflows/ci.yml`: validates package shape and runs tests.
-- `.github/workflows/release.yml`: creates GitHub release ZIPs and publishes to GDAM.
-
-## Versioning And Releases
-
-The version in `addon/plugin.cfg` is the addon package version. Releases are created from `main` with the manual release workflow and plain semver tags like `v0.0.1`; the workflow verifies `plugin.cfg`, builds `@aviorstudio_gd-gesture.zip`, and publishes `@aviorstudio/gd-gesture` to GDAM.
-
-## Testing
-
-Run locally with:
-
-```sh
-./tests/test.sh
-```
-
-**Correction (fieldsofrevik#144):** CI and release both run the required
-Godot 4.7.2 suite, fail on runtime/log errors and unreachable assertion
-sentinels, and verify the exact deterministic release ZIP through a clean
-editor enable, restart, smoke, disable, and restart lifecycle. Earlier text
-said CI ran the script “when available,” which understated that a missing suite
-must fail and did not describe release coverage.
-
-The shared CI/Release test action also validates GDAM action inputs against
-immutable upstream metadata, including negative/restored typo and unsupported
-`publish.version` controls. See [the fixture documentation](tests/fixtures/gdam-actions/README.md)
-for the local Python test command and provenance. `install.version` remains a
-valid CLI selection input; registry publication uses the exact release `tag`.
 
 ## License
 
-MIT
+See `LICENSE`.
