@@ -78,3 +78,7 @@ two-argument `tap_detected(position, index)` contract.
 ## License
 
 See `LICENSE`.
+
+## Development commands
+
+Run `make install` for pinned tooling and the exact Godot binary/templates recorded in `tools/godot-release.json`. `make check` runs the pinned action-input contract, package/release identity controls, behavioral suite and packaged editor lifecycle. Individual gates are `make lint`, `make build`, `make test` and `make artifact-smoke`. The action-input dependency uses the shared checksum-locked PyYAML baseline. `make clean` removes generated artifacts; standalone development and stop commands require a consuming Godot project and are unsupported here.
