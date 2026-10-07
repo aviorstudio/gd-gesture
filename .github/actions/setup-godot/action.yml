@@ -1,20 +1,25 @@
-name: Setup checksummed Godot
-description: Install the repository-reviewed Godot 4.7.2 archive by immutable checksum.
-
+name: Setup verified Godot
+description: Read caller-owned release manifest and install through released shared
+  setup
 runs:
   using: composite
   steps:
-    - name: Read Godot identity
-      id: identity
-      shell: bash
-      run: echo "manifest-sha=$(sha256sum tools/godot-release.json | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
-
-    - name: Cache reviewed Godot archive
-      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
-      with:
-        path: ${{ runner.temp }}/gd-gesture-godot-downloads
-        key: gd-gesture-godot-${{ steps.identity.outputs.manifest-sha }}-${{ runner.os }}
-
-    - name: Install verified Godot
-      shell: bash
-      run: RUNNER_TEMP="$RUNNER_TEMP" INSTALL_TEMPLATES=true ./tools/setup_godot.sh
+  - name: Validate caller release identity
+    id: identity
+    shell: bash
+    run: "python3 - <<'PYTHON'\nimport json, os, re\nfrom pathlib import Path\nrelease=json.loads(Path('tools/godot-release.json').read_text())\n\
+      version=release['version']\nif not re.fullmatch(r'\\d+\\.\\d+\\.\\d+', version):\n\
+      \    raise ValueError('invalid engine version')\nfor kind, archive in [('binary',\
+      \ f'Godot_v{version}-stable_linux.x86_64.zip'), ('templates', f'Godot_v{version}-stable_export_templates.tpz')]:\n\
+      \    if release[kind+'_archive'] != archive or not re.fullmatch(r'[a-f0-9]{128}',\
+      \ release[kind+'_sha512']):\n        raise ValueError('invalid reviewed release\
+      \ identity')\nwith open(os.environ['GITHUB_OUTPUT'],'a') as output:\n    print('version='+version,file=output)\n\
+      \    for kind in ['binary','templates']:\n        print(kind+'-checksum=sha512:'+release[kind+'_sha512'],file=output)\n\
+      PYTHON\n"
+  - uses: nicodes/tools/godot-setup@cf0e560c9bbb888488191fcce03409b6c6fbdc28
+    with:
+      version: ${{ steps.identity.outputs.version }}
+      origin: godot
+      binary-checksum: ${{ steps.identity.outputs.binary-checksum }}
+      templates-checksum: ${{ steps.identity.outputs.templates-checksum }}
+      install-templates: 'true'
