@@ -9,9 +9,9 @@ import unittest
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
-REVISION = "d735444eb470194585def44521d5d91df2260e63"
+REVISION = "699727af05ff8da8f6816cc5c14a16b2b9470219"
 DIGESTS = {
-    "install": "1db7bd742af61d8a5ddf6357a2c0f813af623df1dd8b46ed6b32d8f543480d32",
+    "install": "29a9f5cbfbc572e0827a4d1347a06c369a9686c47c36f752ed70830e1913250c",
     "publish": "7e7cc2cb3412950c3c5a8f9cfb5f146922a6040da58229ed86f45605700066a5",
 }
 
