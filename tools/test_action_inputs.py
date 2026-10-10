@@ -9,11 +9,8 @@ import unittest
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
-REVISION = "699727af05ff8da8f6816cc5c14a16b2b9470219"
-DIGESTS = {
-    "install": "29a9f5cbfbc572e0827a4d1347a06c369a9686c47c36f752ed70830e1913250c",
-    "publish": "7e7cc2cb3412950c3c5a8f9cfb5f146922a6040da58229ed86f45605700066a5",
-}
+REVISION = "6677226d9353df1d410f3e7f5075e13b3b7d5308"
+DIGESTS = {"publish": "9b9de814668665eb77e34afab9929e9585b1f0047f9c31a8b05706447d27bd10"}
 
 
 def contracts():
@@ -46,10 +43,12 @@ def validate(document):
                 name for name, spec in metadata[reference].items()
                 if spec.get("required") and "default" not in spec and name not in supplied
             }
+            if supplied.get("api-key") != "${{ secrets.GDAM_API_KEY }}":
+                raise ValueError("missing required inputs: api-key")
             if missing:
                 raise ValueError(f"{reference}: missing required inputs {sorted(missing)}")
     if seen != set(metadata):
-        raise ValueError("release must exercise both verified GDAM actions")
+        raise ValueError("release must exercise the verified GDAM publish action")
 
 
 class ActionInputControls(unittest.TestCase):
@@ -65,11 +64,6 @@ class ActionInputControls(unittest.TestCase):
     def test_actual_release_workflow(self):
         validate(self.workflow)
 
-    def test_install_version_is_declared(self):
-        document = copy.deepcopy(self.workflow)
-        self.step(document, "install").setdefault("with", {})["version"] = "v0.0.8"
-        validate(document)
-
     def test_publish_version_reinjection_fails_then_restores(self):
         document = copy.deepcopy(self.workflow)
         supplied = self.step(document, "publish")["with"]
@@ -80,7 +74,7 @@ class ActionInputControls(unittest.TestCase):
         validate(document)
 
     def test_input_typos_fail_then_restore(self):
-        for action, typo in (("install", "versoin"), ("publish", "tga")):
+        for action, typo in (("publish", "tga"),):
             with self.subTest(action=action):
                 document = copy.deepcopy(self.workflow)
                 supplied = self.step(document, action).setdefault("with", {})
