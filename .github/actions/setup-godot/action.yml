@@ -1,4 +1,4 @@
-name: Setup verified Godot
+name: "Set up Godot"
 description: Read caller-owned release manifest and install through released shared
   setup
 runs:
@@ -16,7 +16,8 @@ runs:
       \ identity')\nwith open(os.environ['GITHUB_OUTPUT'],'a') as output:\n    print('version='+version,file=output)\n\
       \    for kind in ['binary','templates']:\n        print(kind+'-checksum=sha512:'+release[kind+'_sha512'],file=output)\n\
       PYTHON\n"
-  - uses: nicodes/tools/godot-setup@cf0e560c9bbb888488191fcce03409b6c6fbdc28
+  - name: "Set up Godot"
+    uses: nicodes/tools/godot-setup@cf0e560c9bbb888488191fcce03409b6c6fbdc28
     with:
       version: ${{ steps.identity.outputs.version }}
       origin: godot
