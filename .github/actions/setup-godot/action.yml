@@ -17,7 +17,7 @@ runs:
       \    for kind in ['binary','templates']:\n        print(kind+'-checksum=sha512:'+release[kind+'_sha512'],file=output)\n\
       PYTHON\n"
   - name: "Set up Godot"
-    uses: nicodes/tools/godot-setup@ca747e13a51f301f51635c262d883d57d6084ae3 # v0.27.1
+    uses: nicodes/tools/godot-setup@247267492cd455647facafcfcc6eed4c63c49c0e # v0.27.2
     with:
       version: ${{ steps.identity.outputs.version }}
       origin: godot
