@@ -1,4 +1,4 @@
-<!-- Generated from private documentation source. Do not edit directly. Source SHA256: 88ed4d92c74c3c2295175764466361b3adddc0bc88b64fe4b2c6420dbb114d30 -->
+<!-- Generated from private documentation source. Do not edit directly. Source SHA256: 71be099ec2b5bc427c1d466b78fc0719d0619d389775bcf5e865103693fcc7b1 -->
 
 # gd-gesture
 
@@ -79,6 +79,14 @@ two-argument `tap_detected(position, index)` contract.
 
 See `LICENSE`.
 
-## Development commands
+## Repository development
 
-Run `make install` for pinned tooling and the exact Godot binary/templates recorded in `tools/godot-release.json`. `make check` runs the pinned action-input contract, package/release identity controls, behavioral suite and packaged editor lifecycle. Individual gates are `make lint`, `make build`, `make test` and `make artifact-smoke`. The action-input dependency uses the shared checksum-locked PyYAML baseline. `make clean` removes generated artifacts; standalone development and stop commands require a consuming Godot project and are unsupported here.
+Install the [Komizo release](https://github.com/nicodes/komizo#install) matching `komizo.lock`.
+
+```sh
+komizo check                 # Source, runtime, package and installed-addon checks
+komizo run test              # Focused addon test suite
+komizo run artifact-check    # Verify the built package
+```
+
+The addon recipe supplies the verified Godot engine and templates in checkout-owned tool/data directories. Interactive use belongs to a consuming Godot project.
