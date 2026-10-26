@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check GDAM callers against immutable upstream metadata, with mutation controls."""
+"""Check gdam callers against immutable upstream metadata, with mutation controls."""
 
 import copy
 import hashlib
@@ -48,7 +48,7 @@ def validate(document):
             if missing:
                 raise ValueError(f"{reference}: missing required inputs {sorted(missing)}")
     if seen != set(metadata):
-        raise ValueError("release must exercise the verified GDAM publish action")
+        raise ValueError("release must exercise the verified gdam publish action")
 
 
 class ActionInputControls(unittest.TestCase):
