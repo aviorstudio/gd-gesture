@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the deterministic, closed-manifest GDAM release ZIP."""
+"""Build the deterministic, closed-manifest gdam release ZIP."""
 
 import hashlib
 import pathlib
