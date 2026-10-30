@@ -10,6 +10,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 REVISION = "6677226d9353df1d410f3e7f5075e13b3b7d5308"
+SOURCE_REVISION = "3a46007e296e60e15a4ad47727ad33046e52e6ea"
 DIGESTS = {"publish": "9b9de814668665eb77e34afab9929e9585b1f0047f9c31a8b05706447d27bd10"}
 
 
@@ -20,7 +21,7 @@ def contracts():
         data = path.read_bytes()
         if hashlib.sha256(data).hexdigest() != digest:
             raise ValueError(f"immutable metadata changed: {path}")
-        result[f"aviorstudio/gdam-actions/{action}@{REVISION}"] = yaml.safe_load(data)["inputs"]
+        result[f"aviorstudio/gdam-actions/{action}@{SOURCE_REVISION}"] = yaml.safe_load(data)["inputs"]
     return result
 
 
@@ -58,7 +59,7 @@ class ActionInputControls(unittest.TestCase):
     def step(self, document, action):
         return next(
             step for job in document["jobs"].values() for step in job.get("steps", [])
-            if step.get("uses") == f"aviorstudio/gdam-actions/{action}@{REVISION}"
+            if step.get("uses") == f"aviorstudio/gdam-actions/{action}@{SOURCE_REVISION}"
         )
 
     def test_actual_release_workflow(self):
