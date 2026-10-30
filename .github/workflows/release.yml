@@ -26,8 +26,8 @@ jobs:
       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       with:
         fetch-depth: 0
-    - name: Set up locked komizo
-      uses: nicodes/komizo/setup@2ca94e2fd4bb05f41bb228e9c366e5cc733c75e6
+    - name: Set up development tools
+      uses: nicodes/tools/setup@f7e243524ce2aa29f299e4c79db33001f72f4a30
       env:
         GH_TOKEN: ${{ github.token }}
       timeout-minutes: 5
@@ -35,7 +35,7 @@ jobs:
       id: release
       env:
         BUMP: ${{ inputs.bump }}
-      run: |
+      run: |-
         set -euo pipefail
         test "$GITHUB_REF" = refs/heads/main
         mapfile -t resolved < <(python3 tools/resolve_release.py "$BUMP" "$GITHUB_SHA")
@@ -44,9 +44,10 @@ jobs:
         echo "version=$version" >> "$GITHUB_OUTPUT"
         echo "tag=$tag" >> "$GITHUB_OUTPUT"
     - name: Check project
-      uses: nicodes/komizo/run@2ca94e2fd4bb05f41bb228e9c366e5cc733c75e6
-      with:
-        target: check
+      shell: bash
+      run: |-
+        set -euo pipefail
+        mise run check
     - name: Upload artifacts
       uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
       with:
@@ -82,7 +83,7 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         TAG: ${{ needs.test.outputs.tag }}
-      run: |
+      run: |-
         set -euo pipefail
         expected="$(cut -d' ' -f1 dist/@aviorstudio_gd-gesture.zip.sha256)"
         if gh release view "$TAG" >/dev/null 2>&1; then

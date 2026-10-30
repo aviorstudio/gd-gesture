@@ -5,7 +5,4 @@ __pycache__/
 *.pyc
 .playwright-cli/
 .artifacts/
-
-.komizo.mise*.toml
-
-.komizo.mise*.lock
+/.ci-tools/
