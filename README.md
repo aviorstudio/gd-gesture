@@ -1,4 +1,4 @@
-<!-- Generated from private documentation source. Do not edit directly. Source SHA256: 88ed4d92c74c3c2295175764466361b3adddc0bc88b64fe4b2c6420dbb114d30 -->
+<!-- Generated from private documentation source. Do not edit directly. Source SHA256: 15ce0c37dbde16189ff2c03aa2321af19494ae7e8f77d2ecc7c88dd5dd17c308 -->
 
 # gd-gesture
 
@@ -78,3 +78,16 @@ two-argument `tap_detected(position, index)` contract.
 ## License
 
 See `LICENSE`.
+
+## Contributor checks
+
+Install [mise](https://mise.jdx.dev/), then prepare the pinned development helpers and run the complete native gate:
+
+```sh
+git clone https://github.com/nicodes/tools.git .ci-tools
+git -C .ci-tools checkout --detach f7e243524ce2aa29f299e4c79db33001f72f4a30
+mise install
+mise run check
+```
+
+`mise.toml` owns tool versions and tasks. Engine and template downloads are checksum verified. `mise run build` packages the addon; `mise run test` runs its declared tests. The complete check also validates the installed artifact. Build and test receipts stay in `.artifacts/verification`.
