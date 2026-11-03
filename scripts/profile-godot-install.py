@@ -6,7 +6,7 @@ import re
 import subprocess
 import sys
 
-release = json.loads(Path("tools/godot-release.json").read_text())
+release = json.loads(Path("scripts/godot-release.json").read_text())
 version = release["version"]
 if not re.fullmatch(r"\d+\.\d+\.\d+", version):
     raise ValueError("invalid engine version")

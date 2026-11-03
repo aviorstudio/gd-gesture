@@ -38,7 +38,7 @@ jobs:
       run: |-
         set -euo pipefail
         test "$GITHUB_REF" = refs/heads/main
-        mapfile -t resolved < <(python3 tools/resolve_release.py "$BUMP" "$GITHUB_SHA")
+        mapfile -t resolved < <(python3 scripts/resolve_release.py "$BUMP" "$GITHUB_SHA")
         version=${resolved[0]}
         tag=${resolved[1]}
         echo "version=$version" >> "$GITHUB_OUTPUT"
