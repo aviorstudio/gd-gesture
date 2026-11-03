@@ -7,7 +7,7 @@ archive=${1:-$root/dist/@aviorstudio_gd-gesture.zip}
 fixture=$(mktemp -d)
 trap 'rm -rf "$fixture"' EXIT
 mkdir -p "$fixture/addons/@aviorstudio_gd-gesture" "$fixture/addons/lifecycle_controller" "$fixture/lifecycle"
-python3 "$root/tools/verify_package.py" "$archive" "$fixture/addons/@aviorstudio_gd-gesture"
+python3 "$root/scripts/verify_package.py" "$archive" "$fixture/addons/@aviorstudio_gd-gesture"
 cp "$root/tests/lifecycle/smoke.gd" "$fixture/lifecycle/"
 cp "$root/tests/lifecycle/controller/"* "$fixture/addons/lifecycle_controller/"
 cat > "$fixture/project.godot" <<'EOF'
@@ -23,7 +23,7 @@ EOF
 
 run_test() {
   local sentinel=$1; shift
-  python3 "$root/tools/run_godot_test.py" --sentinel "$sentinel" "$@"
+  python3 "$root/scripts/run_godot_test.py" --sentinel "$sentinel" "$@"
 }
 
 GD_GESTURE_PLUGIN_ENABLED=true run_test \
@@ -39,7 +39,7 @@ run_test "PASS gd-gesture packaged_smoke assertions=1" \
 web=$(mktemp -d)
 trap 'rm -rf "$fixture" "$web"' EXIT
 mkdir -p "$web/addons/@aviorstudio_gd-gesture"
-python3 "$root/tools/verify_package.py" "$archive" "$web/addons/@aviorstudio_gd-gesture"
+python3 "$root/scripts/verify_package.py" "$archive" "$web/addons/@aviorstudio_gd-gesture"
 cp "$root/tests/web/playground.gd" "$root/tests/web/playground.tscn" "$root/tests/web/export_presets.cfg" "$web/"
 cat > "$web/project.godot" <<'EOF'
 [application]
@@ -76,7 +76,7 @@ PY
 consumer=$(mktemp -d)
 trap 'rm -rf "$fixture" "$web" "$consumer"' EXIT
 mkdir -p "$consumer/addons/@aviorstudio_gd-gesture" "$consumer/addons/lifecycle_controller"
-python3 "$root/tools/verify_package.py" "$archive" "$consumer/addons/@aviorstudio_gd-gesture"
+python3 "$root/scripts/verify_package.py" "$archive" "$consumer/addons/@aviorstudio_gd-gesture"
 cp "$root/tests/lifecycle/controller/"* "$consumer/addons/lifecycle_controller/"
 cat > "$consumer/consumer.gd" <<'EOF'
 extends Node
