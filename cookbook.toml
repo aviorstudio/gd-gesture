@@ -78,3 +78,6 @@ policy = { sentinel_regex = "^PASS gd-gesture readme_signal_contract_test assert
 runner = "bash"
 path = "tests/package_lifecycle.sh"
 timeout = 600
+
+[ci]
+timeout_minutes = 30
