@@ -9,7 +9,13 @@ import tempfile
 import unittest
 import zipfile
 
-from verify_package import main
+import importlib.util
+import os
+ROOT = pathlib.Path(__file__).resolve().parents[2]
+spec = importlib.util.spec_from_file_location("shared_addon_package", pathlib.Path(os.environ["TOOLS_ROOT"]) / "helpers/addon-package.py")
+package = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(package)
+MANIFEST = ROOT / "package-manifest.txt"
 
 
 class PackageControls(unittest.TestCase):
@@ -25,14 +31,17 @@ class PackageControls(unittest.TestCase):
                     output.writestr(info, data)
             with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
                 try:
-                    return main([str(archive), str(root / "installed")])
-                except SystemExit:
+                    package.verify(archive, MANIFEST)
+                    return 0
+                except (ValueError, OSError):
                     return 1
+
+    def test_restored_complete_archive_passes(self) -> None:
+        self.assertEqual(self.verify({name: b"x" for name in package.manifest_files(MANIFEST)}), 0)
 
     def test_missing_and_unexpected_members_fail(self) -> None:
         self.assertNotEqual(self.verify({"plugin.cfg": b"x"}), 0)
-        from package_addon import FILES
-        members = {name: b"x" for name in FILES}
+        members = {name: b"x" for name in package.manifest_files(MANIFEST)}
         members["tests/not-for-release.gd"] = b"x"
         self.assertNotEqual(self.verify(members), 0)
 

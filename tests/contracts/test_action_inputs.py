@@ -3,12 +3,15 @@
 
 import copy
 import hashlib
+import os
+import re
+import tomllib
 from pathlib import Path
 import unittest
 
 import yaml
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 REVISION = "6677226d9353df1d410f3e7f5075e13b3b7d5308"
 SOURCE_REVISION = "3a46007e296e60e15a4ad47727ad33046e52e6ea"
 DIGESTS = {"publish": "9b9de814668665eb77e34afab9929e9585b1f0047f9c31a8b05706447d27bd10"}
@@ -44,7 +47,7 @@ def validate(document):
                 name for name, spec in metadata[reference].items()
                 if spec.get("required") and "default" not in spec and name not in supplied
             }
-            if supplied.get("api-key") != "${{ secrets.GDAM_API_KEY }}":
+            if supplied.get("api-key") != "${{ secrets.gdam-key || secrets.GDAM_API_KEY }}":
                 raise ValueError("missing required inputs: api-key")
             if missing:
                 raise ValueError(f"{reference}: missing required inputs {sorted(missing)}")
@@ -54,13 +57,30 @@ def validate(document):
 
 class ActionInputControls(unittest.TestCase):
     def setUp(self):
-        self.workflow = yaml.safe_load((ROOT / ".github/workflows/release.yml").read_text())
+        authority = yaml.safe_load((Path(os.environ["TOOLS_ROOT"]) / ".github/workflows/cookbook-addon-release.yml").read_text())
+        policy = tomllib.loads((ROOT / "cookbook.toml").read_text())["publication"]
+        environment_guard = "needs.plan.outputs.environment != ''" if policy.get("environment") else "needs.plan.outputs.environment == ''"
+        selected = {name: job for name, job in authority["jobs"].items()
+                    if "needs.plan.outputs.registry_auth == 'api-key'" in job.get("if", "")
+                    and environment_guard in job.get("if", "")
+                    and job.get("permissions", {}).get("id-token") != "write"}
+        self.assertEqual(len(selected), 1, "the configured API-key publication branch must have one trusted authority")
+        self.workflow = {"jobs": selected}
 
     def step(self, document, action):
         return next(
             step for job in document["jobs"].values() for step in job.get("steps", [])
             if step.get("uses") == f"aviorstudio/gdam-actions/{action}@{SOURCE_REVISION}"
         )
+
+    def test_caller_uses_the_same_pinned_release_authority(self):
+        caller = yaml.safe_load((ROOT / ".github/workflows/release.yml").read_text())
+        revision = re.search(r"^COOKBOOK_REF := ([a-f0-9]{40})$", (ROOT / "Makefile").read_text(), re.M).group(1)
+        release = caller["jobs"]["release"]
+        self.assertEqual(release["uses"], f"nicodes/tools/.github/workflows/cookbook-addon-release.yml@{revision}")
+        self.assertEqual(release["with"]["tools-ref"], revision)
+        self.assertEqual(release["secrets"]["gdam-key"], "${{ secrets.GDAM_API_KEY }}")
+        self.assertEqual(release["permissions"]["contents"], "write")
 
     def test_actual_release_workflow(self):
         validate(self.workflow)

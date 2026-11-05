@@ -1,0 +1,12 @@
+[application]
+config/name="gd-gesture web playground"
+run/main_scene="res://playground.tscn"
+
+[display/window]
+size/viewport_width=960
+size/viewport_height=540
+size/window_width_override=960
+size/window_height_override=540
+
+[rendering]
+renderer/rendering_method="gl_compatibility"
