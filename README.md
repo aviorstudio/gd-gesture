@@ -1,4 +1,4 @@
-<!-- Generated from private documentation source. Do not edit directly. Source SHA256: 6a18cbd385b1818deab44d01b7f637df6eaefbd85b2b65d16cea98d41eb63810 -->
+<!-- Generated from private documentation source. Do not edit directly. Source SHA256: 16eeb8f05dc75ec18e20063d373ff86a89cd3a5568ca62aa3dc7c23a447e8f97 -->
 
 # gd-gesture
 
@@ -81,17 +81,14 @@ See `LICENSE`.
 
 ## Contributor checks
 
-Install [mise](https://mise.jdx.dev/), then prepare the pinned development helpers and run the complete native gate:
+Install [mise](https://mise.jdx.dev/), then use the pinned cookbook entrypoint:
 
 ```sh
-git clone https://github.com/nicodes/tools.git .ci-tools
-git -C .ci-tools checkout --detach f7e243524ce2aa29f299e4c79db33001f72f4a30
-mise install
-mise run check
+make setup
+make build
+make test
 ```
 
-`mise.toml` owns tool versions and tasks. Engine and template downloads are checksum verified. `mise run build` packages the addon; `mise run test` runs its declared tests. The complete check also validates the installed artifact. Build and test receipts stay in `.artifacts/verification`.
+`mise.toml` pins SDK versions and reviewed engine/template checksums. `cookbook.toml` declares native package inputs, fixture exports and test groups; `Makefile` loads the exact shared cookbook revision. `make build` packages and validates the closed addon payload and exports its installed Web fixture. Tests use those existing artifacts and never build or install dependencies.
 
-## Contributor task interface
-
-Contributor tool versions and task entry points live in the native Mise configuration. Use `mise run lint` for source checks, `mise run test` for the applicable behavioral tests, and `mise run check` for the complete supported gate. `mise run clean` removes declared generated outputs while preserving source, credentials and retained data. This package has no application development service.
+Use `make test:lint`, `make test:unit`, `make test:integration` and `make test:security` for individual groups. The unit suite retains the native assertion reach and failure controls; integration covers installed editor lifecycle and consumer autoload ownership. `make fmt` formats native GDScript, `make clean` removes declared generated outputs, and `make help` describes the supported commands. Build and test receipts remain in `.artifacts/verification`.

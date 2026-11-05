@@ -8,8 +8,17 @@ import pathlib
 import sys
 import unittest
 
-sys.path.insert(0, str(pathlib.Path(__file__).parent))
-from run_godot_test import run
+import importlib.util
+spec = importlib.util.spec_from_file_location("shared_godot_assertions", pathlib.Path(os.environ["TOOLS_ROOT"]) / "helpers/godot-test.py")
+native = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(native)
+
+def run(argv, sentinel, timeout_seconds=30):
+    try:
+        native.run_command(argv, sentinel, timeout_seconds, environment=os.environ.copy())
+    except (ValueError, OSError):
+        return 1
+    return 0
 
 
 class RunnerUnitControls(unittest.TestCase):

@@ -1,0 +1,9 @@
+autoload.gd
+autoload.gd.uid
+plugin.cfg
+plugin.gd
+plugin.gd.uid
+src/gesture_recognizer_module.gd
+src/gesture_recognizer_module.gd.uid
+src/pointer_unifier_module.gd
+src/pointer_unifier_module.gd.uid

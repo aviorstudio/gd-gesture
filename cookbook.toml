@@ -1,0 +1,83 @@
+version = 1
+recipe = "godot-addon"
+
+[package]
+source = "addon"
+manifest = "package-manifest.txt"
+archive = "dist/@aviorstudio_gd-gesture.zip"
+
+[[components.fixture_exports]]
+project = "tests/package/web"
+preset = "Web"
+output = "dist/playground/index.html"
+timeout = 120
+import_timeout = 30
+required_outputs = ["index.html", "index.js", "index.wasm", "index.pck"]
+install_archive = "addons/@aviorstudio_gd-gesture"
+
+[lint]
+required_paths = ["addon/plugin.cfg", "addon/plugin.gd", "addon/autoload.gd", "package-manifest.txt"]
+
+[format]
+paths = ["addon", "tests/autoload_contract_test.gd", "tests/gesture_recognizer_module_test.gd", "tests/pointer_unifier_module_test.gd", "tests/readme_signal_contract_test.gd", "tests/package/web", "tests/lifecycle"]
+
+[clean]
+paths = ["dist", ".artifacts/build", ".artifacts/godot", ".artifacts/godot-data", ".artifacts/godot-config", ".artifacts/tmp", ".artifacts/verification", ".artifacts/python", ".godot"]
+
+[publication]
+mode = "bump"
+validation_timeout = 20
+publish_timeout = 10
+tag_prefix = "v"
+initial = "bump"
+resume = true
+environment = "release"
+
+[[components.python]]
+requirements = "tests/contracts/requirements.txt"
+venv = ".artifacts/python/contracts"
+
+[[tests.lint]]
+runner = "python"
+path = "tests/contracts/test_action_inputs.py"
+python_environment = ".artifacts/python/contracts"
+timeout = 30
+[[tests.unit]]
+runner = "python"
+path = "tests/test_runner_controls.py"
+timeout = 120
+[[tests.unit]]
+runner = "python"
+path = "tests/package/test_archive_controls.py"
+timeout = 30
+[[tests.unit]]
+runner = "python"
+path = "tests/contracts/test_release_version.py"
+timeout = 30
+[[tests.unit]]
+runner = "godot"
+path = "tests/autoload_contract_test.gd"
+timeout = 30
+policy = { sentinel_regex = "^PASS gd-gesture autoload_contract_test assertions=([1-9][0-9]*)$" }
+[[tests.unit]]
+runner = "godot"
+path = "tests/gesture_recognizer_module_test.gd"
+timeout = 30
+policy = { sentinel_regex = "^PASS gd-gesture gesture_recognizer_module_test assertions=([1-9][0-9]*)$" }
+[[tests.unit]]
+runner = "godot"
+path = "tests/pointer_unifier_module_test.gd"
+timeout = 30
+policy = { sentinel_regex = "^PASS gd-gesture pointer_unifier_module_test assertions=([1-9][0-9]*)$" }
+[[tests.unit]]
+runner = "godot"
+path = "tests/readme_signal_contract_test.gd"
+timeout = 30
+policy = { sentinel_regex = "^PASS gd-gesture readme_signal_contract_test assertions=([1-9][0-9]*)$" }
+[[tests.integration]]
+runner = "bash"
+path = "tests/package_lifecycle.sh"
+timeout = 600
+
+[ci]
+timeout_minutes = 30
