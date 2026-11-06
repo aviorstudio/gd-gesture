@@ -15,7 +15,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 spec = importlib.util.spec_from_file_location("shared_addon_package", pathlib.Path(os.environ["TOOLS_ROOT"]) / "helpers/addon-package.py")
 package = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(package)
-MANIFEST = ROOT / "package-manifest.txt"
+MANIFEST = ROOT / "package.files"
 
 
 class PackageControls(unittest.TestCase):

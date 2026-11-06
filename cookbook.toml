@@ -2,8 +2,6 @@ version = 1
 recipe = "godot-addon"
 
 [package]
-source = "addon"
-manifest = "package-manifest.txt"
 archive = "dist/@aviorstudio_gd-gesture.zip"
 
 [[components.fixture_exports]]
@@ -16,7 +14,7 @@ required_outputs = ["index.html", "index.js", "index.wasm", "index.pck"]
 install_archive = "addons/@aviorstudio_gd-gesture"
 
 [lint]
-required_paths = ["addon/plugin.cfg", "addon/plugin.gd", "addon/autoload.gd", "package-manifest.txt"]
+required_paths = ["addon/plugin.cfg", "addon/plugin.gd", "addon/autoload.gd", "package.files"]
 
 [format]
 paths = ["addon", "tests/autoload_contract_test.gd", "tests/gesture_recognizer_module_test.gd", "tests/pointer_unifier_module_test.gd", "tests/readme_signal_contract_test.gd", "tests/package/web", "tests/lifecycle"]

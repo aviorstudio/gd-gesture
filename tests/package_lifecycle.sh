@@ -7,10 +7,10 @@ archive=${1:-$root/dist/@aviorstudio_gd-gesture.zip}
 fixture=$(mktemp -d)
 trap 'rm -rf "$fixture"' EXIT
 mkdir -p "$fixture/addons/@aviorstudio_gd-gesture" "$fixture/addons/lifecycle_controller" "$fixture/lifecycle"
-python3 "$TOOLS_ROOT/helpers/addon-package.py" verify --archive "$archive" --source "$root/addon" --manifest "$root/package-manifest.txt"
+python3 "$TOOLS_ROOT/helpers/addon-package.py" verify --archive "$archive" --source "$root/addon" --manifest "$root/package.files"
 mkdir -p "$fixture/addons/@aviorstudio_gd-gesture"
 unzip -q "$archive" -d "$fixture/addons/@aviorstudio_gd-gesture"
-python3 "$TOOLS_ROOT/helpers/addon-package.py" verify --archive "$archive" --manifest "$root/package-manifest.txt" --installed "$fixture/addons/@aviorstudio_gd-gesture"
+python3 "$TOOLS_ROOT/helpers/addon-package.py" verify --archive "$archive" --manifest "$root/package.files" --installed "$fixture/addons/@aviorstudio_gd-gesture"
 cp "$root/tests/lifecycle/smoke.gd" "$fixture/lifecycle/"
 cp "$root/tests/lifecycle/controller/"* "$fixture/addons/lifecycle_controller/"
 cat > "$fixture/project.godot" <<'EOF'
@@ -57,10 +57,10 @@ PY
 consumer=$(mktemp -d)
 trap 'rm -rf "$fixture" "$consumer"' EXIT
 mkdir -p "$consumer/addons/@aviorstudio_gd-gesture" "$consumer/addons/lifecycle_controller"
-python3 "$TOOLS_ROOT/helpers/addon-package.py" verify --archive "$archive" --source "$root/addon" --manifest "$root/package-manifest.txt"
+python3 "$TOOLS_ROOT/helpers/addon-package.py" verify --archive "$archive" --source "$root/addon" --manifest "$root/package.files"
 mkdir -p "$consumer/addons/@aviorstudio_gd-gesture"
 unzip -q "$archive" -d "$consumer/addons/@aviorstudio_gd-gesture"
-python3 "$TOOLS_ROOT/helpers/addon-package.py" verify --archive "$archive" --manifest "$root/package-manifest.txt" --installed "$consumer/addons/@aviorstudio_gd-gesture"
+python3 "$TOOLS_ROOT/helpers/addon-package.py" verify --archive "$archive" --manifest "$root/package.files" --installed "$consumer/addons/@aviorstudio_gd-gesture"
 cp "$root/tests/lifecycle/controller/"* "$consumer/addons/lifecycle_controller/"
 cat > "$consumer/consumer.gd" <<'EOF'
 extends Node
