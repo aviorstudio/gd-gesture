@@ -5,6 +5,7 @@ import copy
 import hashlib
 import os
 import re
+import sys
 import tomllib
 from pathlib import Path
 import unittest
@@ -12,6 +13,8 @@ import unittest
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(Path(os.environ['COOKBOOK_ROOT']) / 'cookbook'))
+from mise_entrypoint import read as read_entrypoint
 REVISION = "6677226d9353df1d410f3e7f5075e13b3b7d5308"
 SOURCE_REVISION = "3a46007e296e60e15a4ad47727ad33046e52e6ea"
 DIGESTS = {"publish": "9b9de814668665eb77e34afab9929e9585b1f0047f9c31a8b05706447d27bd10"}
@@ -57,7 +60,7 @@ def validate(document):
 
 class ActionInputControls(unittest.TestCase):
     def setUp(self):
-        authority = yaml.safe_load((Path(os.environ["TOOLS_ROOT"]) / ".github/workflows/cookbook-addon-release.yml").read_text())
+        authority = yaml.safe_load((Path(os.environ["COOKBOOK_ROOT"]) / ".github/workflows/cookbook-addon-release.yml").read_text())
         policy = tomllib.loads((ROOT / "cookbook.toml").read_text())["publication"]
         environment_guard = "needs.plan.outputs.environment != ''" if policy.get("environment") else "needs.plan.outputs.environment == ''"
         selected = {name: job for name, job in authority["jobs"].items()
@@ -75,10 +78,10 @@ class ActionInputControls(unittest.TestCase):
 
     def test_caller_uses_the_same_pinned_release_authority(self):
         caller = yaml.safe_load((ROOT / ".github/workflows/release.yml").read_text())
-        revision = re.search(r"^COOKBOOK_REF := ([a-f0-9]{40})$", (ROOT / "Makefile").read_text(), re.M).group(1)
+        revision = read_entrypoint(ROOT)['revision']
         release = caller["jobs"]["release"]
-        self.assertEqual(release["uses"], f"nicodes/tools/.github/workflows/cookbook-addon-release.yml@{revision}")
-        self.assertEqual(release["with"]["tools-ref"], revision)
+        self.assertEqual(release["uses"], f"nicodes/cookbook/.github/workflows/cookbook-addon-release.yml@{revision}")
+        self.assertEqual(release["with"]["cookbook-ref"], revision)
         self.assertEqual(release["secrets"]["gdam-key"], "${{ secrets.GDAM_API_KEY }}")
         self.assertEqual(release["permissions"]["contents"], "write")
 
