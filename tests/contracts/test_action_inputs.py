@@ -50,7 +50,7 @@ def validate(document):
                 name for name, spec in metadata[reference].items()
                 if spec.get("required") and "default" not in spec and name not in supplied
             }
-            if supplied.get("api-key") != "${{ secrets.gdam-key || secrets.GDAM_API_KEY }}":
+            if supplied.get("api-key") != "${{ secrets.gdam-key }}":
                 raise ValueError("missing required inputs: api-key")
             if missing:
                 raise ValueError(f"{reference}: missing required inputs {sorted(missing)}")
@@ -60,12 +60,11 @@ def validate(document):
 
 class ActionInputControls(unittest.TestCase):
     def setUp(self):
-        authority = yaml.safe_load((Path(os.environ["COOKBOOK_ROOT"]) / ".github/workflows/cookbook-addon-release.yml").read_text())
+        authority = yaml.safe_load((Path(os.environ["COOKBOOK_ROOT"]) / ".github/workflows/cookbook-addon-release-apikey.yml").read_text())
         policy = tomllib.loads((ROOT / "cookbook.toml").read_text())["publication"]
         environment_guard = "needs.plan.outputs.environment != ''" if policy.get("environment") else "needs.plan.outputs.environment == ''"
         selected = {name: job for name, job in authority["jobs"].items()
-                    if "needs.plan.outputs.registry_auth == 'api-key'" in job.get("if", "")
-                    and environment_guard in job.get("if", "")
+                    if environment_guard in job.get("if", "")
                     and job.get("permissions", {}).get("id-token") != "write"}
         self.assertEqual(len(selected), 1, "the configured API-key publication branch must have one trusted authority")
         self.workflow = {"jobs": selected}
@@ -80,7 +79,7 @@ class ActionInputControls(unittest.TestCase):
         caller = yaml.safe_load((ROOT / ".github/workflows/release.yml").read_text())
         revision = read_entrypoint(ROOT)['revision']
         release = caller["jobs"]["release"]
-        self.assertEqual(release["uses"], f"nicodes/cookbook/.github/workflows/cookbook-addon-release.yml@{revision}")
+        self.assertEqual(release["uses"], f"nicodes/cookbook/.github/workflows/cookbook-addon-release-apikey.yml@{revision}")
         self.assertEqual(release["with"]["cookbook-ref"], revision)
         self.assertEqual(release["secrets"]["gdam-key"], "${{ secrets.GDAM_API_KEY }}")
         self.assertEqual(release["permissions"]["contents"], "write")
