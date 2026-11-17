@@ -60,7 +60,7 @@ def validate(document):
 
 class ActionInputControls(unittest.TestCase):
     def setUp(self):
-        authority = yaml.safe_load((Path(os.environ["COOKBOOK_ROOT"]) / ".github/workflows/cookbook-addon-release-apikey.yml").read_text())
+        authority = yaml.safe_load((Path(os.environ["COOKBOOK_ROOT"]) / ".github/workflows/release-addon-api-key.yml").read_text())
         policy = tomllib.loads((ROOT / "cookbook.toml").read_text())["publication"]
         environment_guard = "needs.plan.outputs.environment != ''" if policy.get("environment") else "needs.plan.outputs.environment == ''"
         selected = {name: job for name, job in authority["jobs"].items()
@@ -79,7 +79,7 @@ class ActionInputControls(unittest.TestCase):
         caller = yaml.safe_load((ROOT / ".github/workflows/release.yml").read_text())
         revision = read_entrypoint(ROOT)['revision']
         release = caller["jobs"]["release"]
-        self.assertEqual(release["uses"], f"nicodes/cookbook/.github/workflows/cookbook-addon-release-apikey.yml@{revision}")
+        self.assertEqual(release["uses"], f"nicodes/cookbook/.github/workflows/release-addon-api-key.yml@{revision}")
         self.assertEqual(release["with"]["cookbook-ref"], revision)
         self.assertEqual(release["secrets"]["gdam-key"], "${{ secrets.GDAM_API_KEY }}")
         self.assertEqual(release["permissions"]["contents"], "write")
